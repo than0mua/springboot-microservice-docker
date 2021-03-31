@@ -2,34 +2,65 @@ version: "3"
 services:
   employee-config-server:
     image: employee-config-server
+    build:
+      context: .
+      args:
+        PATH_SERVICE: employee-config-server
+        NAME_SERVICE: employee-config-server
     ports:
       - "8888:8888"
     networks:
       - consumer-producer
   eureka-server:
     image: eureka-server
+    build:
+      context: .
+      args:
+        PATH_SERVICE: eureka-server
+        NAME_SERVICE: eureka-server
     ports:
       - "8090:8090"
+    restart: always
     networks:
       - consumer-producer
     depends_on:
       - employee-config-server
   employee-producer:
     image: employee-producer
+    build:
+      context: .
+      args:
+        PATH_SERVICE: employee-producer
+        NAME_SERVICE: employee-producer
     ports:
       - "8080:8080"
     networks:
       - consumer-producer
+    depends_on:
+      - employee-config-server
+      - eureka-server
   employee-consumer:
     image: employee-consumer
+    build:
+      context: .
+      args:
+        PATH_SERVICE: employee-consumer
+        NAME_SERVICE: employee-consumer
     ports:
       - "8091:8091"
     networks:
       - consumer-producer
     depends_on:
+      - employee-config-server
+      - eureka-server
       - employee-producer
   employee-zuul-service:
     image: employee-zuul-service
+    build:
+      context: .
+      args:
+        PATH_SERVICE: employee-zuul-service
+        NAME_SERVICE: employee-zuul-service
     ports:
       - "8079:8079"
     networks:
