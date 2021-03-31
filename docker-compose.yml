@@ -1,0 +1,40 @@
+version: "3"
+services:
+  employee-config-server:
+    image: employee-config-server
+    ports:
+      - "8888:8888"
+    networks:
+      - consumer-producer
+  eureka-server:
+    image: eureka-server
+    ports:
+      - "8090:8090"
+    networks:
+      - consumer-producer
+    depends_on:
+      - employee-config-server
+  employee-producer:
+    image: employee-producer
+    ports:
+      - "8080:8080"
+    networks:
+      - consumer-producer
+  employee-consumer:
+    image: employee-consumer
+    ports:
+      - "8091:8091"
+    networks:
+      - consumer-producer
+    depends_on:
+      - employee-producer
+  employee-zuul-service:
+    image: employee-zuul-service
+    ports:
+      - "8079:8079"
+    networks:
+      - consumer-producer
+    depends_on:
+      - employee-consumer
+networks:
+  consumer-producer:
